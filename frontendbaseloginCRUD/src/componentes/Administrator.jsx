@@ -13,20 +13,35 @@ class Administrator extends React.Component
         alertText: ""
     }
 
-    componentDidMount() {
+    /*componentDidMount() {
         axios.get("Preguntas").then(response => {
             this.setState({ data: response.data });
         }).catch(error => {
             console.info(error);
             this.setState({ showAlert: true, alertText: "ERROR EN LA OBTENCION DE DATOS" });
         })
-    } 
+    } */
 
     
     render() {
         const {data,showAlert, alertText } = this.state;        
         return (
+
             <Container className="MarginContainer" >
+                <h1 className="AlignCenter" > Graficador de Gantt </h1>
+                <hr style={{ width: "80%" }} />
+
+
+                <ul>
+                    <li>Bazán</li>
+                    <li>Lalo</li>
+                    <li>Moreno Noguerón Ximena</li>
+                    <li>Quecholac</li>
+                </ul>
+
+            </Container>
+
+            /* <Container className="MarginContainer" >
                 <h1 className="AlignCenter" > CREAR, ALTAS, BAJAS Y CAMBIOS </h1>
                 <hr style={{ width: "80%" }} />
                 {
@@ -55,7 +70,7 @@ class Administrator extends React.Component
                     </tbody>
                 </Table>
 
-            </Container>
+            </Container> */
         )
     }
 

@@ -5,8 +5,7 @@ module.exports = {
     mode: "development",
     entry: "./src/Application.jsx",
     output: {
-    //path:path.resolve(__dirname, '../backendbaselogin/public'),
-    path:path.resolve(__dirname, 'dist'),
+    path:path.resolve(__dirname, '../backendbaselogin/public'),
     filename: "main.js",
     clean: true
     },
@@ -30,16 +29,26 @@ module.exports = {
           {
             test: /\.css$/,
             use: ["style-loader", "css-loader"]
+          },
+          {
+            test: /\.(png|jpe?g|gif|svg)$/i,
+            type: 'asset/resource'   // o 'asset' si quieres inline para archivos pequeños
           }
         ]
       },
     devServer: {
-    static: {
-      directory: path.join(__dirname, 'dist'), 
-    },
-    port: 8080, // Puerto del servidor
-    open: true, // Abrir navegador automáticamente
-    hot: true, // Habilitar Hot Module Replacement (HMR)
-    historyApiFallback: true, // Aplicaciones SPA
-  }            
+      static: {
+        directory: path.join(__dirname, 'dist'),
+      },
+      port: 8080,
+      open: true,
+      hot: true,
+      historyApiFallback: true,
+      proxy: [
+        {
+          context: ['/Login'],
+          target: 'http://localhost:8000',
+        },
+      ],
+  }        
   }

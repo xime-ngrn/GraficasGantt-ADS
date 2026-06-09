@@ -15,3 +15,6 @@ npm i axios
     "build": "webpack",
     "start": "webpack serve --mode development"
   }
+
+Dependencia agregada para trabajar con Modales
+npm install --save react-modal

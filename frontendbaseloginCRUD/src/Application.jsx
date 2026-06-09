@@ -16,7 +16,6 @@ render() {
  
 export default Application;
 
-//CODIGO ACTUALIZADO PAREA LA NUEVA VERSION DE REACT
 const rootElement = document.getElementById("contenedor");
 const root = createRoot(rootElement);
 root.render(<Application />);
