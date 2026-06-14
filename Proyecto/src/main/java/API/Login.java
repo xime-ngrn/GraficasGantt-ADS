@@ -19,6 +19,11 @@ public class Login extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
+        
         outter = response.getWriter();
                  response.setContentType("text/html");
         String usuario = request.getParameter("user");
@@ -27,7 +32,7 @@ public class Login extends HttpServlet {
         try
         {
         DB bd= new DB();
-        bd.setConnection("com.mysql.cj.jdbc.Driver", "jdbc:mysql://localhost/usuarios?serverTimezone=UTC");
+        bd.setConnection("com.mysql.cj.jdbc.Driver", "jdbc:mysql://localhost/diagramagantt?serverTimezone=UTC");
         ResultSet rs=bd.executeQuery("select * from login where USERNAME='"+usuario+"' and PASSWORD='"+password+"';");
         if(rs.next())
         {
