@@ -42,7 +42,7 @@ class Login extends React.Component {
     const { condition, tipousuario } = this.state;
 
     if (condition && tipousuario == "administrador") {
-      return <Navigate to='/administrator' />;
+      return <Navigate to='/administrador' />;
     }
 
     const backgroundWithImage = { '--login-bg': `url(${fondo})` };

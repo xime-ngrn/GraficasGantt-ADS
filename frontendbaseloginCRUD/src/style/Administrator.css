@@ -1,62 +1,136 @@
 .admin-background {
   min-height: 100vh;
-  background-color: #eef2f8;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 3rem 1.5rem;
+  padding: 48px 0;
+  background-color: #eef4f7;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(146, 208, 219, 0.85) 0, transparent 38%),
+    radial-gradient(circle at 88% 12%, rgba(194, 188, 245, 0.85) 0, transparent 38%),
+    radial-gradient(circle at 80% 82%, rgba(241, 192, 156, 0.85) 0, transparent 38%),
+    radial-gradient(circle at 18% 85%, rgba(225, 151, 187, 0.80) 0, transparent 38%),
+    radial-gradient(circle at 50% 50%, rgba(184, 201, 179, 0.70) 0, transparent 50%);
+  background-attachment: fixed;
 }
 
-.MarginContainer {
-  width: 100%;
-  max-width: 900px;
+.admin-wrapper {
+  max-width: 760px;
   margin: 0 auto;
-  padding: 2.5rem 3rem;
-  border-radius: 24px;
-  background: #ffffff;
-  border: 1px solid #e2e8f2;
-  box-shadow: 0 10px 30px rgba(8, 37, 71, 0.10);
-  color: #0f2e52;
+  padding: 0 16px;
 }
 
-.AlignCenter {
+.admin-title {
   text-align: center;
-  color: #0f2e52;
-  font-weight: 700;
+  color: #083863;
+  font-weight: 800;
   letter-spacing: 0.5px;
-  margin-bottom: 1.25rem;
-  text-shadow: none;
+  margin-bottom: 28px;
 }
 
-.MarginContainer hr {
+.glass-card {
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(8, 56, 99, 0.18);
+  padding: 28px;
+}
+
+.glass-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.glass-header h2 {
+  margin: 0;
+  color: #083863;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.btn-crear {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #083863;
+  color: #fff;
   border: none;
-  height: 1px;
-  background: linear-gradient(90deg,
-              rgba(37, 99, 235, 0),
-              rgba(37, 99, 235, 0.35),
-              rgba(37, 99, 235, 0));
-  margin: 1.5rem auto 2rem auto;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(8, 56, 99, 0.25);
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+.btn-crear:hover {
+  background: #0a4a82;
+  color: #fff;
+  transform: translateY(-1px);
 }
 
-.MarginContainer ul {
-  list-style: none;
-  padding: 0;
-  max-width: 480px;
-  margin: 0 auto;
+.exercise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.MarginContainer ul li {
-  background: #f3f6fb;
-  border: 1px solid #dde5f0;
-  border-left: 3px solid #2563eb;
-  border-radius: 10px;
-  padding: 0.7rem 1.2rem;
-  margin-bottom: 0.6rem;
-  color: #1f3b63;
-  transition: background 0.2s ease, transform 0.15s ease;
+.exercise-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+.exercise-item:hover {
+  background: rgba(255, 255, 255, 0.65);
+  transform: translateY(-1px);
 }
 
-.MarginContainer ul li:hover {
-  background: #e9f0fb;
-  transform: translateX(4px);
+.exercise-name {
+  font-weight: 600;
+  color: #083863;
+}
+
+.acciones-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.accion-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #083863;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
+}
+.accion-btn:hover { transform: translateY(-1px); }
+.accion-ver:hover      { background: #92d0db; color: #083863; }
+.accion-editar:hover   { background: #C2BCF5; color: #083863; }
+.accion-eliminar:hover { background: #e197bb; color: #ffffff; }
+
+.empty-state {
+  text-align: center;
+  color: #083863;
+  opacity: 0.7;
+  padding: 28px 0;
+}
+
+@media (max-width: 540px) {
+  .exercise-item { flex-direction: column; align-items: flex-start; }
+  .acciones-bar { align-self: flex-end; }
 }

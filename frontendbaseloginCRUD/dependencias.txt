@@ -18,3 +18,4 @@ npm i axios
 
 Dependencia agregada para trabajar con Modales
 npm install --save react-modal
+npm install --save frappe-gantt

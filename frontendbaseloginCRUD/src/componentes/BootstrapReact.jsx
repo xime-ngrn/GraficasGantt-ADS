@@ -4,7 +4,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Login from "./Login.jsx";
 import Administrator from "./Administrator.jsx";
-import Info from "./Info.jsx"
+import CrearEjercicio from "./CrearEjercicio.jsx";
+import Visualizar from "./VisualizarEjercicio.jsx"
 
 class BootstrapReact extends React.Component {
 
@@ -13,8 +14,8 @@ class BootstrapReact extends React.Component {
     <div>
           <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="/administrator" element={<Administrator />} />
-          <Route path="/info" element={<Info />} /> 
+          <Route path="/administrador" element={<Administrator />} />
+          <Route path="/crear" element={<CrearEjercicio />} />
           </Routes>
     </div>);    
   }
