@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Link } from "react-router-dom"; // <-- Solo agregamos "Link" aquí arriba
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Modal from 'react-modal';
 import fondo from '../assets/fondo.png';
@@ -83,6 +83,25 @@ class Login extends React.Component {
             >
               Submit
             </button>
+
+            {/* ABRAZO DEL BOTÓN: Tu arquitectura no cambió, solo agregamos este enlace aquí abajo */}
+            <div style={{ marginTop: '20px', textAlign: 'center' }}>
+              <Link 
+                to="/Registro" 
+                style={{ 
+                  background: 'transparent', 
+                  border: 'none', 
+                  color: '#ffffff', 
+                  cursor: 'pointer', 
+                  textDecoration: 'underline', 
+                  fontWeight: '500', 
+                  textShadow: '0 1px 3px rgba(0, 0, 0, 0.55)' 
+                }}
+              >
+                ¿No tienes cuenta? Regístrate aquí
+              </Link>
+            </div>
+
           </div>
         </div>
 

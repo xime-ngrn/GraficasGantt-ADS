@@ -40,14 +40,14 @@ module.exports = {
       static: {
         directory: path.join(__dirname, 'dist'),
       },
-      port: 8080,
+      port: 3000,
       open: true,
       hot: true,
       historyApiFallback: true,
       proxy: [
         {
-          context: ['/Login'],
-          target: 'http://localhost:8000',
+          context: ['/Login', '/Registro'],
+          target: 'http://localhost:8080',
         },
       ],
   }        

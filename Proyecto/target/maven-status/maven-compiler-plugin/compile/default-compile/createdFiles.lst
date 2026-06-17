@@ -1,4 +1,5 @@
 API\Pregunta.class
 API\DB.class
+API\Registro.class
 API\Login.class
 API\Preguntas.class
