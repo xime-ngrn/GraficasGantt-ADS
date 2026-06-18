@@ -33,30 +33,29 @@ const IconoEliminar = () => (
 class Administrator extends React.Component {
   state = {
     data: [],
+    error: false,
   };
 
   componentDidMount() {
-    axios.get("Preguntas")
-      .then((res) => this.setState({ data: res.data }))
+    axios.get("/Ejercicios")
+      .then((res) => {
+        let data = res.data;
+        if (typeof data === "string") data = JSON.parse(data);
+        this.setState({ data: Array.isArray(data) ? data : [], error: false });
+      })
       .catch((err) => {
         console.info(err);
-        this.setState({
-          data: [
-            { id: 1, nombre: 'Ejercicio de cinemática' },
-            { id: 2, nombre: 'Diagrama de proyecto web' },
-            { id: 3, nombre: 'Planeación de sprint' },
-          ],
-        });
+        this.setState({ data: [], error: true });
       });
   }
 
   eliminarEjercicio = (id) => {
     this.setState({ data: this.state.data.filter((e) => e.id !== id) });
-    // axios.delete(`Preguntas/${id}`).catch((err) => console.info(err));
+    // axios.delete(`/Ejercicios?id=${id}`).catch((err) => console.info(err));
   };
 
   render() {
-    const { data } = this.state;
+    const { data, error } = this.state;
 
     return (
       <div className="admin-background">
@@ -72,30 +71,39 @@ class Administrator extends React.Component {
             </div>
 
             {data.length === 0 ? (
-              <p className="empty-state">Aún no hay ejercicios guardados.</p>
+              <p className="empty-state">
+                {error
+                  ? "No se pudieron cargar los ejercicios."
+                  : "Aún no hay ejercicios guardados."}
+              </p>
             ) : (
               <div className="exercise-list">
-                {data.map((ejercicio) => (
-                  <div key={ejercicio.id} className="exercise-item">
-                    <span className="exercise-name">{ejercicio.nombre}</span>
+                {data.map((ejercicio, i) => {
+                  const id = ejercicio.id ?? i;
+                  const nombre = ejercicio.nombre ?? ejercicio.name ?? `Ejercicio ${id}`;
 
-                    <div className="acciones-bar">
-                      <Link to={`/visualizar/${ejercicio.id}`} className="accion-btn accion-ver" title="Visualizar">
-                        <IconoVer />
-                      </Link>
-                      <Link to={`/modificar/${ejercicio.id}`} className="accion-btn accion-editar" title="Modificar">
-                        <IconoEditar />
-                      </Link>
-                      <button
-                        className="accion-btn accion-eliminar"
-                        title="Eliminar"
-                        onClick={() => this.eliminarEjercicio(ejercicio.id)}
-                      >
-                        <IconoEliminar />
-                      </button>
+                  return (
+                    <div key={id} className="exercise-item">
+                      <span className="exercise-name">{nombre}</span>
+
+                      <div className="acciones-bar">
+                        <Link to={`/visualizar/${id}`} className="accion-btn accion-ver" title="Visualizar">
+                          <IconoVer />
+                        </Link>
+                        <Link to={`/modificar/${id}`} className="accion-btn accion-editar" title="Modificar">
+                          <IconoEditar />
+                        </Link>
+                        <button
+                          className="accion-btn accion-eliminar"
+                          title="Eliminar"
+                          onClick={() => this.eliminarEjercicio(id)}
+                        >
+                          <IconoEliminar />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

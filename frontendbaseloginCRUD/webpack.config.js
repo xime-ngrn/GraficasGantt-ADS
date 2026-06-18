@@ -46,8 +46,9 @@ module.exports = {
       historyApiFallback: true,
       proxy: [
         {
-          context: ['/Login', '/Registro'],
-          target: 'http://localhost:8080',
+          context: ['/Login', '/Registro', '/Ejercicios', '/GuardarEjercicio'],
+          target: 'http://localhost:8000',
+          changeOrigin: true,
         },
       ],
   }        

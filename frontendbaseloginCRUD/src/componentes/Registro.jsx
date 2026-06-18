@@ -15,8 +15,7 @@ const Registro = () => {
     const formData = new URLSearchParams();
     formData.append('user', usuario);
     formData.append('password', password);
-    formData.append('tipo', 'administrador'); // Modificar a administrador si queremos probar acceso a nuevas cuentas creadas o viceversa a usuario
-
+    formData.append('tipo', 'administrador');
     try {
       const response = await fetch('/Registro', {
         method: 'POST',

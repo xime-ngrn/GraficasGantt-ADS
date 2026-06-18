@@ -1,5 +1,6 @@
-API\Pregunta.class
 API\DB.class
+API\GuardarEjercicio.class
 API\Registro.class
+API\Ejercicios.class
 API\Login.class
-API\Preguntas.class
+API\Ejercicio.class

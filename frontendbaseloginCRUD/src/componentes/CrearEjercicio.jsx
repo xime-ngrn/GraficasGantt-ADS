@@ -1,11 +1,17 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import Modal from 'react-modal';
+import axios from 'axios';
 import Gantt from 'frappe-gantt';
 import '../style/frappe-gantt.css';
 import '../style/CrearEjercicio.css';
 
 const COLORES = ['#92d0db', '#B8C9B3', '#F1C09C', '#e197bb', '#C2BCF5'];
+
+// TODO: reemplazar por el id del usuario que inició sesión.
+// Para hacerlo bien, el servlet Login debería devolver el id del usuario
+// y guardarlo (p. ej. en localStorage) para leerlo aquí.
+const ID_USUARIO = 1;
 
 const IconoFlecha = () => (
   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -44,10 +50,13 @@ class CrearGantt extends Component {
     this.ganttRef = React.createRef();
     this.gantt = null;
     this.state = {
+      nombreEjercicio: '',   // nombre general del ejercicio
       tareas: [],
       modalAbierto: false,
       modalSalir: false,
       hayCambios: false,
+      redirigir: false,      // para volver al administrador tras "Guardar y salir"
+      errorGuardar: '',
       viewMode: 'Week',
       siguienteId: 1,
       nombre: '', inicio: '', fin: '', dependencia: '',
@@ -107,6 +116,10 @@ class CrearGantt extends Component {
     this.setState({ [name]: value });
   };
 
+  // El nombre del ejercicio sí es parte de lo que se guarda, así que marca cambios.
+  manejarNombreEjercicio = (e) =>
+    this.setState({ nombreEjercicio: e.target.value, hayCambios: true });
+
   agregarTarea = () => {
     const { nombre, inicio, fin, dependencia, siguienteId } = this.state;
     if (!nombre || !inicio || !fin) return;
@@ -137,18 +150,51 @@ class CrearGantt extends Component {
     });
   };
 
-  guardarDiagrama = () => {
-    // axios.post('GuardarDiagrama', { tareas: this.state.tareas }).then(...).catch(...)
-    console.log('Tareas a guardar:', this.state.tareas);
-    this.setState({ hayCambios: false });
+  // Guarda el ejercicio y sus tareas en el backend.
+  // salir = true -> tras guardar con éxito, vuelve al administrador.
+  guardarDiagrama = (salir = false) => {
+    const { nombreEjercicio, tareas } = this.state;
+    if (!nombreEjercicio.trim() || tareas.length === 0) return;
+
+    this.setState({ errorGuardar: '' });
+
+    // Arreglos paralelos: una entrada de cada campo por tarea.
+    const params = new URLSearchParams();
+    params.append('nombreEjercicio', nombreEjercicio);
+    params.append('idUsuario', ID_USUARIO);
+    tareas.forEach((t) => {
+      params.append('tareaNombre', t.name);
+      params.append('tareaInicio', t.start);
+      params.append('tareaFin', t.end);
+    });
+
+    axios.post('/GuardarEjercicio', params)
+      .then((res) => {
+        if (res.data && res.data.status === 'yes') {
+          this.setState({ hayCambios: false, modalSalir: false, redirigir: salir });
+        } else {
+          this.setState({
+            errorGuardar: (res.data && res.data.message) || 'No se pudo guardar el ejercicio.',
+          });
+        }
+      })
+      .catch((err) => {
+        console.info(err);
+        this.setState({ errorGuardar: 'Error de conexión al guardar.' });
+      });
   };
 
   cambiarVista = (modo) => this.setState({ viewMode: modo });
 
   render() {
-    const { tareas, modalAbierto, modalSalir, hayCambios, viewMode,
+    const { nombreEjercicio, tareas, modalAbierto, modalSalir, hayCambios,
+            redirigir, errorGuardar, viewMode,
             nombre, inicio, fin, dependencia } = this.state;
+
+    if (redirigir) return <Navigate to="/administrador" />;
+
     const formularioValido = nombre && inicio && fin;
+    const puedeGuardar = nombreEjercicio.trim() && tareas.length > 0;
 
     const cssColores = COLORES.map((color, i) => `
       .gantt .gantt-color-${i} .bar { fill: ${color}; }
@@ -178,8 +224,8 @@ class CrearGantt extends Component {
               )}
               <button
                 className="btn-guardar"
-                onClick={this.guardarDiagrama}
-                disabled={tareas.length === 0 || !hayCambios}
+                onClick={() => this.guardarDiagrama(false)}
+                disabled={!puedeGuardar || !hayCambios}
               >
                 <IconoGuardar /> Guardar
               </button>
@@ -188,9 +234,26 @@ class CrearGantt extends Component {
 
           <h1 className="crear-title">Crear diagrama de Gantt</h1>
 
+          {errorGuardar && (
+            <div className="alert alert-danger py-2">{errorGuardar}</div>
+          )}
+
           <div className="row g-3">
             <div className="col-md-4">
               <div className="glass-card">
+                <div className="mb-3">
+                  <label className="form-label" style={{ color: '#083863', fontWeight: 600 }}>
+                    Nombre del ejercicio
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Ej. Planeación del proyecto"
+                    value={nombreEjercicio}
+                    onChange={this.manejarNombreEjercicio}
+                  />
+                </div>
+
                 <button className="btn-agregar" onClick={this.abrirModal}>
                   + Agregar tarea
                 </button>
@@ -278,7 +341,13 @@ class CrearGantt extends Component {
           <div className="modal-acciones">
             <button className="btn btn-secondary" onClick={this.cerrarModalSalir}>Cancelar</button>
             <Link to="/administrador" className="btn btn-outline-danger">Salir sin guardar</Link>
-            <Link to="/administrador" className="btn btn-primary" onClick={this.guardarDiagrama}>Guardar y salir</Link>
+            <button
+              className="btn btn-primary"
+              onClick={() => this.guardarDiagrama(true)}
+              disabled={!puedeGuardar}
+            >
+              Guardar y salir
+            </button>
           </div>
         </Modal>
       </div>
