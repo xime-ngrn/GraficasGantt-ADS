@@ -59,7 +59,6 @@ class CrearGantt extends Component {
       nombre: '', inicio: '', fin: '', dependencia: '',
     };
   }
-
   componentDidMount() {
     Modal.setAppElement('#contenedor');
     this.renderizarGantt();
@@ -147,42 +146,43 @@ class CrearGantt extends Component {
   };
 
   guardarDiagrama = (salir = false) => {
-    const { nombreEjercicio, tareas } = this.state;
-    if (!nombreEjercicio.trim() || tareas.length === 0) return;
+  const { nombreEjercicio, tareas } = this.state;
+  if (!nombreEjercicio.trim() || tareas.length === 0) return;
 
-    this.setState({ errorGuardar: '' });
+  this.setState({ errorGuardar: '' });
 
-    const params = new URLSearchParams();
-    params.append('nombreEjercicio', nombreEjercicio);
-    params.append('idUsuario', ID_USUARIO);
-    tareas.forEach((t) => {
-      params.append('tareaNombre', t.name);
-      params.append('tareaInicio', t.start);
-      params.append('tareaFin', t.end);
+  const params = new URLSearchParams();
+  params.append('nombreEjercicio', nombreEjercicio);
+  params.append('idUsuario', ID_USUARIO);
+
+  tareas.forEach((t) => {
+    params.append('tareaNombre', t.name);
+    params.append('tareaInicio', t.start);
+    params.append('tareaFin', t.end);
+    params.append('idTemporal', t.id.replace('tarea-', ''));
+    params.append('depTemporal', t.dependencies ? t.dependencies.replace('tarea-', '') : 'null');
+  });
+
+  axios.post('/GuardarEjercicio', params)
+    .then((res) => {
+      if (res.data && res.data.status === 'yes') {
+        this.setState({ hayCambios: false, modalSalir: false, redirigir: salir });
+      } else {
+        this.setState({ errorGuardar: res.data.message || 'No se pudo guardar el ejercicio.' });
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      this.setState({ errorGuardar: 'Error de conexión al guardar.' });
     });
-
-    axios.post('/GuardarEjercicio', params)
-      .then((res) => {
-        if (res.data && res.data.status === 'yes') {
-          this.setState({ hayCambios: false, modalSalir: false, redirigir: salir });
-        } else {
-          this.setState({
-            errorGuardar: (res.data && res.data.message) || 'No se pudo guardar el ejercicio.',
-          });
-        }
-      })
-      .catch((err) => {
-        console.info(err);
-        this.setState({ errorGuardar: 'Error de conexión al guardar.' });
-      });
-  };
+};
 
   cambiarVista = (modo) => this.setState({ viewMode: modo });
 
   render() {
     const { nombreEjercicio, tareas, modalAbierto, modalSalir, hayCambios,
-            redirigir, errorGuardar, viewMode,
-            nombre, inicio, fin, dependencia } = this.state;
+      redirigir, errorGuardar, viewMode,
+      nombre, inicio, fin, dependencia } = this.state;
 
     if (redirigir) return <Navigate to="/administrador" />;
 

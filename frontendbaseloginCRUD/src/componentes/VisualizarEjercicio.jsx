@@ -62,6 +62,7 @@ class VisualizarEjercicio extends Component {
           name: t.nombre,
           start: (t.fecha_inicio || '').slice(0, 10),
           end: (t.fecha_terminacion || '').slice(0, 10),
+          dependencies: t.idDependencia != null ? 'tarea-' + t.idDependencia : undefined,
         }));
 
         this.setState({ nombreEjercicio: data.nombre || '', tareas, cargando: false, error: false });

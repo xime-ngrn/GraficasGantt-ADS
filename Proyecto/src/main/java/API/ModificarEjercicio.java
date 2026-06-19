@@ -6,8 +6,9 @@ package API;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.ResultSet;
+import java.util.HashMap;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,122 +19,91 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ModificarEjercicio extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
-protected void doPost(HttpServletRequest request,
-        HttpServletResponse response)
-        throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-    response.setContentType("application/json");
-    response.setCharacterEncoding("UTF-8");
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
+        response.setContentType("application/json;charset=UTF-8");
 
-    PrintWriter out = response.getWriter();
+        PrintWriter out = response.getWriter();
 
-    String idEjercicio =
-            request.getParameter("idEjercicio");
+        String idEjercicio = request.getParameter("idEjercicio");
+        String nombreEjercicio = request.getParameter("nombreEjercicio");
 
-    String nombreEjercicio =
-            request.getParameter("nombreEjercicio");
+        String[] tareaNombre = request.getParameterValues("tareaNombre");
+        String[] tareaInicio = request.getParameterValues("tareaInicio");
+        String[] tareaFin = request.getParameterValues("tareaFin");
+        String[] idTemporal = request.getParameterValues("idTemporal");
+        String[] depTemporal = request.getParameterValues("depTemporal");
 
-    String[] idTarea =
-            request.getParameterValues("idTarea");
+        try {
+            DB bd = new DB();
+            bd.setConnection("com.mysql.cj.jdbc.Driver",
+                    "jdbc:mysql://localhost/diagramagantt?serverTimezone=UTC");
 
-    String[] tareaNombre =
-            request.getParameterValues("tareaNombre");
+            String updateEjercicio = "UPDATE ejercicios SET nombre='" + nombreEjercicio
+                    + "' WHERE idEJERCICIO=" + idEjercicio + ";";
+            bd.executeUpdate(updateEjercicio);
 
-    String[] tareaInicio =
-            request.getParameterValues("tareaInicio");
+            bd.executeUpdate("UPDATE tareas SET idDependencia = NULL WHERE idEJERCICIO=" + idEjercicio + ";");
+            bd.executeUpdate("DELETE FROM tareas WHERE idEJERCICIO=" + idEjercicio + ";");
 
-    String[] tareaFin =
-            request.getParameterValues("tareaFin");
+            HashMap<String, Integer> mapaIds = new HashMap<>();
 
-    try {
+            if (tareaNombre != null) {
 
-        DB bd = new DB();
+                for (int i = 0; i < tareaNombre.length; i++) {
+                    String insertTarea = "INSERT INTO tareas (nombre, fecha_inicio, fecha_terminacion, idEJERCICIO, idDependencia) VALUES ('"
+                            + tareaNombre[i] + "', '" + tareaInicio[i] + "', '" + tareaFin[i] + "', " + idEjercicio + ", NULL);";
+                    bd.executeUpdate(insertTarea);
 
-        bd.setConnection(
-            "com.mysql.cj.jdbc.Driver",
-            "jdbc:mysql://localhost/diagramagantt?serverTimezone=UTC"
-        );
+                    ResultSet rsT = bd.executeQuery("SELECT LAST_INSERT_ID() AS id;");
+                    if (rsT.next()) {
+                        mapaIds.put(idTemporal[i], rsT.getInt("id"));
+                    }
+                }
 
-        String updateEjercicio =
-            "UPDATE ejercicios " +
-            "SET nombre='" + nombreEjercicio + "' " +
-            "WHERE idEJERCICIO=" + idEjercicio;
+                for (int i = 0; i < tareaNombre.length; i++) {
+                    if (depTemporal[i] != null && !depTemporal[i].trim().isEmpty() && !depTemporal[i].equals("null")) {
+                        String dependenciaHijo = idTemporal[i];
+                        String dependenciaPadre = depTemporal[i];
 
-        bd.executeUpdate(updateEjercicio);
+                        if (mapaIds.containsKey(dependenciaHijo) && mapaIds.containsKey(dependenciaPadre)) {
+                            int idRealHijo = mapaIds.get(dependenciaHijo);
+                            int idRealPadre = mapaIds.get(dependenciaPadre);
 
-        if (idTarea != null) {
-
-            for (int i = 0; i < idTarea.length; i++) {
-
-                String updateTarea =
-                    "UPDATE tareas SET " +
-                    "nombre='" + tareaNombre[i] + "', " +
-                    "fecha_inicio='" + tareaInicio[i] + "', " +
-                    "fecha_terminacion='" + tareaFin[i] + "' " +
-                    "WHERE idTAREA=" + idTarea[i];
-
-                bd.executeUpdate(updateTarea);
+                            String updateDependencia = "UPDATE tareas SET idDependencia = " + idRealPadre
+                                    + " WHERE idTAREA = " + idRealHijo + ";";
+                            bd.executeUpdate(updateDependencia);
+                        }
+                    }
+                }
             }
+
+            out.write("{\"status\":\"yes\",\"idEjercicio\":" + idEjercicio + "}");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            out.write("{\"status\":\"error\",\"message\":\"No se pudo actualizar el ejercicio.\"}");
         }
-
-        out.write("{\"status\":\"yes\"}");
-
-    } catch (Exception e) {
-
-        e.printStackTrace();
-
-        out.write(
-            "{\"status\":\"error\",\"message\":\"No se pudo actualizar\"}"
-        );
     }
-}
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Modificar ejercicio";
+    }
 }

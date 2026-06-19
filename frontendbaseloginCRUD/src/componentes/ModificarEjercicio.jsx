@@ -90,6 +90,9 @@ class ModificarEjercicio extends Component {
           name: t.nombre,
           start: (t.fecha_inicio || '').slice(0, 10),
           end: (t.fecha_terminacion || '').slice(0, 10),
+          // Predecesora -> id local del padre, para que se dibuje la flecha
+          // y se conserve la dependencia al volver a guardar.
+          dependencies: t.idTAREA_PREDECESORA != null ? 'tarea-' + t.idTAREA_PREDECESORA : undefined,
         }));
 
         this.setState({ nombreEjercicio: data.nombre || '', tareas, cargando: false });
@@ -196,17 +199,20 @@ class ModificarEjercicio extends Component {
 
     this.setState({ errorGuardar: '' });
 
-    // Solo las tareas con idTarea (existentes), que son las que el servlet sabe actualizar.
-    const existentes = tareas.filter((t) => t.idTarea != null);
-
     const params = new URLSearchParams();
     params.append('idEjercicio', idEjercicio);
     params.append('nombreEjercicio', nombreEjercicio);
-    existentes.forEach((t) => {
-      params.append('idTarea', t.idTarea);
+
+    // Mandamos TODAS las tareas (existentes y nuevas). El servlet reconstruye
+    // las tareas del ejercicio y aplica las dependencias con el mismo método
+    // de dos fases que usa Guardar. Como id temporal usamos el id local
+    // ('tarea-N' o 'nueva-N'); basta con que sea único dentro del envío.
+    tareas.forEach((t) => {
       params.append('tareaNombre', t.name);
       params.append('tareaInicio', t.start);
       params.append('tareaFin', t.end);
+      params.append('idTemporal', t.id);
+      params.append('depTemporal', t.dependencies ? t.dependencies : 'null');
     });
 
     axios.post('/ModificarEjercicio', params)
@@ -234,7 +240,6 @@ class ModificarEjercicio extends Component {
 
     const formularioValido = nombre && inicio && fin;
     const puedeGuardar = nombreEjercicio.trim() && tareas.length > 0;
-    const hayTareasNuevas = tareas.some((t) => t.idTarea == null);
 
     const cssColores = COLORES.map((color, i) => `
       .gantt .gantt-color-${i} .bar { fill: ${color}; }
@@ -275,11 +280,6 @@ class ModificarEjercicio extends Component {
           <h1 className="crear-title">Modificar diagrama de Gantt</h1>
 
           {errorGuardar && <div className="alert alert-danger py-2">{errorGuardar}</div>}
-          {hayTareasNuevas && (
-            <div className="alert alert-warning py-2">
-              Las tareas nuevas no se guardarán: el backend actual solo actualiza las tareas existentes.
-            </div>
-          )}
 
           {cargando ? (
             <p className="text-muted">Cargando ejercicio…</p>
