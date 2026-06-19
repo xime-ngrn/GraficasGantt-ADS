@@ -16,6 +16,7 @@ npm i axios
     "start": "webpack serve --mode development"
   }
 
-Dependencia agregada para trabajar con Modales
+Dependencia agregada para trabajar con Modales, crear el Diagrama de Gantt y Exportar archivos a JPG o PDF
 npm install --save react-modal
 npm install --save frappe-gantt
+npm install jspdf html2canvas

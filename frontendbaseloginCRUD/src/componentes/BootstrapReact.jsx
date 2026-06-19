@@ -4,9 +4,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Login from "./Login.jsx";
 import Administrator from "./Administrator.jsx";
+import Registro from "./Registro.jsx";
 import CrearEjercicio from "./CrearEjercicio.jsx";
-import Visualizar from "./VisualizarEjercicio.jsx";
-import Registro from "./Registro.jsx"; // <-- Componente Registro
+import VisualizarEjercicio from "./VisualizarEjercicio.jsx";
+import ModificarEjercicio from "./ModificarEjercicio.jsx";
 
 class BootstrapReact extends React.Component {
 
@@ -15,10 +16,12 @@ class BootstrapReact extends React.Component {
     <div>
           <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/Registro" element={<Registro />} /> 
           <Route path="/Login" element={<Login />} /> 
           <Route path="/administrador" element={<Administrator />} />
           <Route path="/crear" element={<CrearEjercicio />} />
-          <Route path="/Registro" element={<Registro />} /> 
+          <Route path="/visualizar/:id" element={<VisualizarEjercicio />} />
+          <Route path="/modificar/:id" element={<ModificarEjercicio />} />
           </Routes>
     </div>);    
   }

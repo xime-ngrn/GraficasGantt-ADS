@@ -84,7 +84,6 @@ class Login extends React.Component {
               Submit
             </button>
 
-            {/* ABRAZO DEL BOTÓN: Tu arquitectura no cambió, solo agregamos este enlace aquí abajo */}
             <div style={{ marginTop: '20px', textAlign: 'center' }}>
               <Link 
                 to="/Registro" 

@@ -18,7 +18,7 @@ public class DB implements java.io.Serializable
      try
             {
             Class.forName(driver);
-            con = DriverManager.getConnection(url, "root", "Xime09865.");
+            con = DriverManager.getConnection(url, "root", "1234");
             this.url=	url;
             this.driver=driver;
             }

@@ -1,6 +1,8 @@
 API\DB.class
+API\Ejercicios.class
+API\ModificarEjercicio.class
 API\GuardarEjercicio.class
 API\Registro.class
-API\Ejercicios.class
 API\Login.class
 API\Ejercicio.class
+API\EliminarEjercicio.class

@@ -8,9 +8,6 @@ import '../style/CrearEjercicio.css';
 
 const COLORES = ['#92d0db', '#B8C9B3', '#F1C09C', '#e197bb', '#C2BCF5'];
 
-// TODO: reemplazar por el id del usuario que inició sesión.
-// Para hacerlo bien, el servlet Login debería devolver el id del usuario
-// y guardarlo (p. ej. en localStorage) para leerlo aquí.
 const ID_USUARIO = 1;
 
 const IconoFlecha = () => (
@@ -50,12 +47,12 @@ class CrearGantt extends Component {
     this.ganttRef = React.createRef();
     this.gantt = null;
     this.state = {
-      nombreEjercicio: '',   // nombre general del ejercicio
+      nombreEjercicio: '',
       tareas: [],
       modalAbierto: false,
       modalSalir: false,
       hayCambios: false,
-      redirigir: false,      // para volver al administrador tras "Guardar y salir"
+      redirigir: false,
       errorGuardar: '',
       viewMode: 'Week',
       siguienteId: 1,
@@ -116,7 +113,6 @@ class CrearGantt extends Component {
     this.setState({ [name]: value });
   };
 
-  // El nombre del ejercicio sí es parte de lo que se guarda, así que marca cambios.
   manejarNombreEjercicio = (e) =>
     this.setState({ nombreEjercicio: e.target.value, hayCambios: true });
 
@@ -150,15 +146,12 @@ class CrearGantt extends Component {
     });
   };
 
-  // Guarda el ejercicio y sus tareas en el backend.
-  // salir = true -> tras guardar con éxito, vuelve al administrador.
   guardarDiagrama = (salir = false) => {
     const { nombreEjercicio, tareas } = this.state;
     if (!nombreEjercicio.trim() || tareas.length === 0) return;
 
     this.setState({ errorGuardar: '' });
 
-    // Arreglos paralelos: una entrada de cada campo por tarea.
     const params = new URLSearchParams();
     params.append('nombreEjercicio', nombreEjercicio);
     params.append('idUsuario', ID_USUARIO);

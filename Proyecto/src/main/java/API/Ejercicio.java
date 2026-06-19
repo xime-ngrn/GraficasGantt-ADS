@@ -2,44 +2,102 @@ package API;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.ResultSet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.sql.ResultSet;
 
 public class Ejercicio extends HttpServlet {
 
-    private PrintWriter out;
+@Override
+protected void doGet(HttpServletRequest request,
+        HttpServletResponse response)
+        throws ServletException, IOException {
 
+    response.setContentType("application/json");
+    response.setCharacterEncoding("UTF-8");
+    response.addHeader("Access-Control-Allow-Origin", "*");
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        out = response.getWriter();
-        String id=request.getParameter("id");
-        System.out.println("id:"+id);
-        response.setContentType("application/json");
-        response.addHeader("Access-Control-Allow-Origin", "*");
-            StringBuilder json = new StringBuilder();
-            json.append("[");            
-    try
-    {
-    DB bd= new DB();
-    bd.setConnection("com.mysql.cj.jdbc.Driver", "jdbc:mysql://localhost/crudjson");        
-    ResultSet rs=bd.executeQuery("select * from tablajson where IDEJERCICIO='"+id+"';");    
-    if(rs.next())
-    {
-    String cadena=rs.getString("columnajson");
-    json.append(cadena);
+    PrintWriter out = response.getWriter();
+
+    String id = request.getParameter("id");
+
+    try {
+
+        DB bd = new DB();
+
+        bd.setConnection(
+            "com.mysql.cj.jdbc.Driver",
+            "jdbc:mysql://localhost/diagramagantt?serverTimezone=UTC"
+        );
+
+        ResultSet rsEjercicio =
+            bd.executeQuery(
+                "SELECT * FROM ejercicios WHERE idEJERCICIO=" + id
+            );
+
+        StringBuilder json = new StringBuilder();
+
+        json.append("{");
+
+        if (rsEjercicio.next()) {
+
+            json.append("\"idEJERCICIO\":")
+                .append(rsEjercicio.getInt("idEJERCICIO"))
+                .append(",");
+
+            json.append("\"nombre\":\"")
+                .append(rsEjercicio.getString("nombre"))
+                .append("\",");
+
+            json.append("\"tareas\":[");
+        }
+
+        ResultSet rsTareas =
+            bd.executeQuery(
+                "SELECT * FROM tareas WHERE idEJERCICIO=" + id
+            );
+
+        boolean primero = true;
+
+        while (rsTareas.next()) {
+
+            if (!primero) {
+                json.append(",");
+            }
+
+            json.append("{");
+
+            json.append("\"idTAREA\":")
+                .append(rsTareas.getInt("idTAREA"))
+                .append(",");
+
+            json.append("\"nombre\":\"")
+                .append(rsTareas.getString("nombre"))
+                .append("\",");
+
+            json.append("\"fecha_inicio\":\"")
+                .append(rsTareas.getString("fecha_inicio"))
+                .append("\",");
+
+            json.append("\"fecha_terminacion\":\"")
+                .append(rsTareas.getString("fecha_terminacion"))
+                .append("\"");
+
+            json.append("}");
+
+            primero = false;
+        }
+
+        json.append("]}");
+
+        out.write(json.toString());
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        out.write("{\"status\":\"error\"}");
     }
-    }
-    catch(Exception e)
-    {
-    e.printStackTrace();
-    }
-    json.append("]");
-    System.out.println("json:"+json.toString());        
-    out.write(json.toString());
-    }
+}
 
 }
