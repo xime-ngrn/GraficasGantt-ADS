@@ -1,3 +1,4 @@
+
 create database diagramagantt;
 use diagramagantt;
 
@@ -45,7 +46,7 @@ INSERT INTO tareas (nombre, fecha_inicio, fecha_terminacion, idEJERCICIO) values
 
 INSERT INTO ejercicios (nombre, idLOGIN) values ('Proyecto de Ejemplo 1', 1);
 
-INSERT INTO tareas (nombre, fecha_inicio, fecha_terminacion, idEJERCICIO) values ('Tarea A', '2026-05-18', '2026-05-25', 1);
+INSERT INTO tareas (nombre, fecha_inicio, fecha_terminacion, idEJERCICIO) values ('Tarea A', '2026-05-18', '2026-05-25', 2);
 INSERT INTO tareas (nombre, fecha_inicio, fecha_terminacion, idEJERCICIO, idDependencia) values ('Tarea B', '2026-05-26', '2026-05-29', 2, 5);
 INSERT INTO tareas (nombre, fecha_inicio, fecha_terminacion, idEJERCICIO, idDependencia) values ('Tarea C', '2026-06-01', '2026-06-19', 2, 6);
 INSERT INTO tareas (nombre, fecha_inicio, fecha_terminacion, idEJERCICIO, idDependencia) values ('Tarea D', '2026-06-20', '2026-06-21', 2, 7);
