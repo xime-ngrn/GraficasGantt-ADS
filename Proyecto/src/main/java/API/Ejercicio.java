@@ -54,8 +54,6 @@ public class Ejercicio extends HttpServlet {
                 json.append("\"fecha_inicio\":\"").append(rsTareas.getString("fecha_inicio")).append("\",");
                 json.append("\"fecha_terminacion\":\"").append(rsTareas.getString("fecha_terminacion")).append("\",");
 
-                // Dependencia (predecesora). La columna real es idTAREA_PREDECESORA,
-                // la misma que escribe GuardarEjercicio. Puede ser NULL.
                 int pred = rsTareas.getInt("idDependencia");
                 if (rsTareas.wasNull()) {
                     json.append("\"idDependencia\":null");

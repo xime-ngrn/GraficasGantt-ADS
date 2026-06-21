@@ -92,7 +92,7 @@ class ModificarEjercicio extends Component {
           end: (t.fecha_terminacion || '').slice(0, 10),
           // Predecesora -> id local del padre, para que se dibuje la flecha
           // y se conserve la dependencia al volver a guardar.
-          dependencies: t.idTAREA_PREDECESORA != null ? 'tarea-' + t.idTAREA_PREDECESORA : undefined,
+          dependencies: t.idDependencia != null ? 'tarea-' + t.idDependencia : undefined,
         }));
 
         this.setState({ nombreEjercicio: data.nombre || '', tareas, cargando: false });
