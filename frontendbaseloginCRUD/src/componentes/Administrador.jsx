@@ -41,7 +41,7 @@ const estilosModal = {
   },
 };
 
-class Administrator extends React.Component {
+class Administrador extends React.Component {
   state = {
     data: [],
     error: false,
@@ -174,4 +174,4 @@ class Administrator extends React.Component {
   }
 }
 
-export default Administrator;
+export default Administrador;

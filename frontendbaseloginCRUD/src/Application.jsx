@@ -7,6 +7,7 @@ import BootstrapReact from './componentes/BootstrapReact.jsx'
 
 class Application extends React.Component {
 render() {
+      console.log('BUILD 26-JUNIO-FRESH');
       return(
         <BrowserRouter>
             <BootstrapReact />
