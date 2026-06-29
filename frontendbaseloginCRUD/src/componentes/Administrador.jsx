@@ -31,6 +31,50 @@ const IconoEliminar = () => (
   </svg>
 );
 
+// Tabla de mejoras del proyecto
+const MEJORAS = [
+  {
+    mejora: 'Visualizar Ejercicio',
+    modulo: 'VisualizarEjercicio.jsx',
+    descripcion: 'Mejora de la visualización de las tareas y la gráfica complementaria en un mismo elemento.',
+  },
+  {
+    mejora: 'Exportar Ejercicio',
+    modulo: 'VisualizarEjercicio.jsx',
+    descripcion: 'Mejora en la exportación de un diagrama junto con sus tareas relacionadas.',
+  },
+  {
+    mejora: 'Eliminación de un Ejercicio',
+    modulo: 'VisualizarEjercicio.jsx',
+    descripcion: 'Implementación de un modal para la doble confirmación.',
+  },
+  {
+    mejora: 'Implementación del Proyecto en NetBeans',
+    modulo: 'Todos',
+    descripcion: 'Implementación de todos los componentes dentro del proyecto en NetBeans.',
+  },
+];
+
+const estilosTablaMejoras = `
+  .mejoras-card { margin-top: 22px; }
+  .mejoras-card h2 { color: #083863; margin: 0 0 14px; }
+  .mejoras-table { width: 100%; border-collapse: collapse; }
+  .mejoras-table th,
+  .mejoras-table td { text-align: left; padding: 12px 14px; vertical-align: top; }
+  .mejoras-table thead th {
+    color: #083863; font-weight: 700;
+    border-bottom: 2px solid rgba(8,56,99,0.18);
+  }
+  .mejoras-table tbody tr { border-bottom: 1px solid rgba(8,56,99,0.10); }
+  .mejoras-table tbody tr:last-child { border-bottom: none; }
+  .mejoras-table .col-num { width: 36px; color: #4f8cff; font-weight: 700; }
+  .mejoras-table .mejora-nombre { font-weight: 600; color: #083863; }
+  .mejoras-table .col-modulo {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: #2563eb; white-space: nowrap;
+  }
+`;
+
 const estilosModal = {
   overlay: { backgroundColor: 'rgba(8,56,99,0.35)', zIndex: 1000 },
   content: {
@@ -77,27 +121,27 @@ class Administrador extends React.Component {
   };
 
   eliminarEjercicio = () => {
-  const id = this.state.ejercicioAEliminar;
-  if (id == null) return;
+    const id = this.state.ejercicioAEliminar;
+    if (id == null) return;
 
-  axios.delete(`/EliminarEjercicio?idEjercicio=${id}`)
-    .then((res) => {
-      if (res.data && res.data.status === "yes") {
-        this.setState((s) => ({
-          data: s.data.filter((e) => e.id !== id),
-          modalDeleteIsOpen: false,
-          ejercicioAEliminar: null,
-        }));
-      } else {
-        console.info("El backend no confirmó el borrado:", res.data);
+    axios.delete(`/EliminarEjercicio?idEjercicio=${id}`)
+      .then((res) => {
+        if (res.data && res.data.status === "yes") {
+          this.setState((s) => ({
+            data: s.data.filter((e) => e.id !== id),
+            modalDeleteIsOpen: false,
+            ejercicioAEliminar: null,
+          }));
+        } else {
+          console.info("El backend no confirmó el borrado:", res.data);
+          this.setState({ modalDeleteIsOpen: false, ejercicioAEliminar: null });
+        }
+      })
+      .catch((err) => {
+        console.info(err);
         this.setState({ modalDeleteIsOpen: false, ejercicioAEliminar: null });
-      }
-    })
-    .catch((err) => {
-      console.info(err);
-      this.setState({ modalDeleteIsOpen: false, ejercicioAEliminar: null });
-    });
-};
+      });
+  };
 
   render() {
     const { data, error, modalDeleteIsOpen, ejercicioAEliminar } = this.state;
@@ -106,6 +150,8 @@ class Administrador extends React.Component {
 
     return (
       <div className="admin-background">
+        <style>{estilosTablaMejoras}</style>
+
         <div className="admin-wrapper">
           <h1 className="admin-title">Graficador de Gantt</h1>
 
@@ -148,6 +194,30 @@ class Administrador extends React.Component {
                 ))}
               </div>
             )}
+          </div>
+
+          <div className="glass-card mejoras-card">
+            <h2>Tabla de mejoras</h2>
+            <table className="mejoras-table">
+              <thead>
+                <tr>
+                  <th className="col-num">#</th>
+                  <th>Mejora</th>
+                  <th>Módulo de mejora</th>
+                  <th>Descripción</th>
+                </tr>
+              </thead>
+              <tbody>
+                {MEJORAS.map((m, i) => (
+                  <tr key={i}>
+                    <td className="col-num">{i + 1}</td>
+                    <td className="mejora-nombre">{m.mejora}</td>
+                    <td className="col-modulo">{m.modulo}</td>
+                    <td>{m.descripcion}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
